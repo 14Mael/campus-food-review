@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/layout :: head('校园美食汇 - 首页')">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/"><i class="bi bi-shop"></i> 校园美食汇</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/"><i class="bi bi-house"></i> 首页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/shops"><i class="bi bi-list"></i> 全部店铺</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right"></i> 登录</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" href="/register"><i class="bi bi-person-plus"></i> 注册</a>
+                    </li>
+                    <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span sec:authentication="name">用户</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/user/profile"><i class="bi bi-person"></i> 个人中心</a></li>
+                            <li><a class="dropdown-item" href="/shops"><i class="bi bi-search"></i> 浏览店铺</a></li>
+                            <li sec:authorize="hasRole('ADMIN')"><hr class="dropdown-divider"></li>
+                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item text-success" href="/admin"><i class="bi bi-gear"></i> 管理后台</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="bg-success text-white py-5">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold"><i class="bi bi-shop"></i> 校园美食汇</h1>
+            <p class="lead">发现校园周边美食，分享你的舌尖体验</p>
+            <div class="row justify-content-center mt-4">
+                <div class="col-md-6">
+                    <form action="/shops" method="get" class="input-group">
+                        <input type="text" name="keyword" class="form-control form-control-lg" placeholder="搜索店铺或美食...">
+                        <button class="btn btn-warning btn-lg" type="submit"><i class="bi bi-search"></i> 搜索</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container my-4">
+        <!-- Top Rated Shops -->
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3><i class="bi bi-star-fill text-warning"></i> 高分店铺推荐</h3>
+                <a href="/shops?sort=rating" class="btn btn-outline-success btn-sm">查看更多</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4" th:each="shop : ${topRated}">
+                    <div class="card h-100 shadow-sm shop-card">
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:180px;">
+                            <img th:if="${shop.image != null}" th:src="${shop.image}" class="h-100 w-100" style="object-fit:cover;" alt="店铺图片">
+                            <i th:unless="${shop.image != null}" class="bi bi-shop display-1 text-muted"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${shop.name}">店铺名</h5>
+                            <p class="card-text text-muted small" th:text="${shop.location}">位置</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-star-fill"></i> <span th:text="${shop.avgRating}">0.0</span>
+                                </span>
+                                <small class="text-muted"><i class="bi bi-chat-dots"></i> <span th:text="${shop.reviewCount}">0</span> 条点评</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <a th:href="@{/shops/{id}(id=${shop.id})}" class="btn btn-success w-100">查看详情</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Most Reviewed -->
+        <section class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3><i class="bi bi-fire text-danger"></i> 热门店铺</h3>
+                <a href="/shops?sort=reviews" class="btn btn-outline-success btn-sm">查看更多</a>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4" th:each="shop : ${mostReviewed}">
+                    <div class="card h-100 shadow-sm shop-card">
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:180px;">
+                            <img th:if="${shop.image != null}" th:src="${shop.image}" class="h-100 w-100" style="object-fit:cover;" alt="店铺图片">
+                            <i th:unless="${shop.image != null}" class="bi bi-shop display-1 text-muted"></i>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${shop.name}">店铺名</h5>
+                            <p class="card-text text-muted small" th:text="${shop.location}">位置</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-star-fill"></i> <span th:text="${shop.avgRating}">0.0</span>
+                                </span>
+                                <small class="text-muted"><i class="bi bi-chat-dots"></i> <span th:text="${shop.reviewCount}">0</span> 条点评</small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0">
+                            <a th:href="@{/shops/{id}(id=${shop.id})}" class="btn btn-success w-100">查看详情</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hot Reviews -->
+        <section>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3><i class="bi bi-heart-fill text-danger"></i> 热门点评</h3>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-6" th:each="review : ${hotReviews}">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong th:text="${review.user.nickname}">用户</strong>
+                                <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">日期</small>
+                            </div>
+                            <div class="mb-2">
+                                <span th:each="i : ${#numbers.sequence(1, review.rating)}" class="text-warning"><i class="bi bi-star-fill"></i></span>
+                                <span th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" class="text-muted"><i class="bi bi-star"></i></span>
+                            </div>
+                            <p class="card-text" th:text="${review.content}">点评内容</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a th:href="@{/shops/{id}(id=${review.shop.id})}" class="text-success text-decoration-none small" th:text="'查看店铺：' + ${review.shop.name}">店铺名</a>
+                                <small><i class="bi bi-hand-thumbs-up"></i> <span th:text="${review.likeCount}">0</span></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-1"><i class="bi bi-shop"></i> 校园美食汇 - 校园饮食推荐与点评平台</p>
+            <p class="mb-0 small text-muted">发现校园美食，分享舌尖体验</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

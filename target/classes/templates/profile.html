@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 校园美食汇</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/"><i class="bi bi-shop"></i> 校园美食汇</a>
+            <div class="collapse navbar-collapse show">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house"></i> 首页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/shops"><i class="bi bi-list"></i> 店铺</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="/logout"><i class="bi bi-box-arrow-right"></i> 退出</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row">
+            <!-- Profile Sidebar -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm text-center">
+                    <div class="card-body">
+                        <div class="display-1 text-success mb-3">
+                            <i class="bi bi-person-circle"></i>
+                        </div>
+                        <h4 th:text="${profileUser.nickname}">用户昵称</h4>
+                        <p class="text-muted">@<span th:text="${profileUser.username}">用户名</span></p>
+                        <span class="badge bg-success" th:text="${profileUser.role}">角色</span>
+                        <hr>
+                        <div class="d-flex justify-content-around">
+                            <div>
+                                <h5 th:text="${#lists.size(reviews)}">0</h5>
+                                <small class="text-muted">点评</small>
+                            </div>
+                            <div>
+                                <h5 th:text="${#lists.size(favorites)}">0</h5>
+                                <small class="text-muted">收藏</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div sec:authorize="hasRole('ADMIN')" class="card shadow-sm mt-3">
+                    <div class="card-body text-center">
+                        <a href="/admin" class="btn btn-success w-100"><i class="bi bi-gear"></i> 管理后台</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Reviews -->
+            <div class="col-md-8 mb-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-chat-dots"></i> 我的点评</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(reviews)}" class="text-center py-4">
+                            <p class="text-muted">你还没有写过点评</p>
+                            <a href="/shops" class="btn btn-success">去点评</a>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(reviews)}">
+                            <div class="border-bottom pb-3 mb-3" th:each="review : ${reviews}">
+                                <div class="d-flex justify-content-between">
+                                    <a th:href="@{/shops/{id}(id=${review.shop.id})}" class="text-decoration-none fw-bold text-success" th:text="${review.shop.name}">店铺名</a>
+                                    <small class="text-muted" th:text="${#temporals.format(review.createdAt, 'yyyy-MM-dd')}">日期</small>
+                                </div>
+                                <div class="my-1">
+                                    <span th:each="i : ${#numbers.sequence(1, review.rating)}" class="text-warning"><i class="bi bi-star-fill"></i></span>
+                                    <span th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" class="text-muted"><i class="bi bi-star"></i></span>
+                                </div>
+                                <p class="mb-1" th:text="${review.content}">内容</p>
+                                <small>
+                                    <span class="badge" th:classappend="${review.status.name() == 'APPROVED'} ? 'bg-success' : 
+                                        ${review.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger'"
+                                        th:text="${review.status.name() == 'APPROVED'} ? '已通过' : 
+                                        ${review.status.name() == 'PENDING'} ? '待审核' : '已驳回'">状态</span>
+                                    <span class="ms-2 text-muted"><i class="bi bi-hand-thumbs-up"></i> <span th:text="${review.likeCount}">0</span></span>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- My Favorites -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="bi bi-heart-fill"></i> 我的收藏</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(favorites)}" class="text-center py-4">
+                            <p class="text-muted">还没有收藏任何店铺</p>
+                            <a href="/shops" class="btn btn-danger">去发现</a>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(favorites)}">
+                            <div class="row g-3">
+                                <div class="col-md-6" th:each="fav : ${favorites}">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title" th:text="${fav.shop.name}">店铺名</h6>
+                                            <p class="card-text small text-muted" th:text="${fav.shop.location}">位置</p>
+                                            <a th:href="@{/shops/{id}(id=${fav.shop.id})}" class="btn btn-outline-danger btn-sm">查看</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container text-center">
+            <p class="mb-0">校园美食汇 - 个人中心</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>

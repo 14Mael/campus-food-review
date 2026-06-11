@@ -1,0 +1,17 @@
+package com.campus.food.repository;
+
+import com.campus.food.entity.ReviewLike;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface ReviewLikeRepository extends JpaRepository<ReviewLike, Long> {
+
+    boolean existsByUserIdAndReviewId(Long userId, Long reviewId);
+
+    Optional<ReviewLike> findByUserIdAndReviewId(Long userId, Long reviewId);
+
+    long countByReviewId(Long reviewId);
+}
