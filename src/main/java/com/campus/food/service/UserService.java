@@ -44,4 +44,9 @@ public class UserService {
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
+
+    @Transactional
+    public User save(User user) {
+        return userRepository.save(user);
+    }
 }

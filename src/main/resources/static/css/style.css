@@ -47,10 +47,15 @@ body {
     color: #ffc107;
 }
 
-.rating-stars .btn-check:checked + .btn-outline-warning {
+.rating-stars .btn-outline-warning:hover {
     background-color: #ffc107;
     color: #000;
-    border-color: #ffc107;
+}
+
+.rating-stars .btn-check:checked + .btn-outline-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+    border-color: #ffc107 !important;
 }
 
 /* Review Items */

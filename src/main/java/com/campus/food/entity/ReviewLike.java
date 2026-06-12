@@ -4,6 +4,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 @Table(name = "review_likes",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "review_id"}))
@@ -19,6 +22,7 @@ public class ReviewLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Review review;
 
     @Column(name = "created_at")

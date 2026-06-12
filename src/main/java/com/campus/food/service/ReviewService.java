@@ -100,6 +100,8 @@ public class ReviewService {
     public void deleteReview(Long id) {
         Review review = findById(id);
         Long shopId = review.getShop().getId();
+        // 先删除所有点赞记录，再删点评
+        reviewLikeRepository.deleteAll(reviewLikeRepository.findByReviewId(id));
         reviewRepository.deleteById(id);
         updateShopRating(shopId);
     }

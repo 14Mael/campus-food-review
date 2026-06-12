@@ -36,6 +36,10 @@
                         <p class="text-muted">@<span th:text="${profileUser.username}">用户名</span></p>
                         <span class="badge bg-success" th:text="${profileUser.role}">角色</span>
                         <hr>
+                        <a href="/user/profile/edit" class="btn btn-outline-success btn-sm mb-3">
+                            <i class="bi bi-pencil"></i> 编辑资料
+                        </a>
+                        <hr>
                         <div class="d-flex justify-content-around">
                             <div>
                                 <h5 th:text="${#lists.size(reviews)}">0</h5>
@@ -74,14 +78,13 @@
                                 </div>
                                 <div class="my-1">
                                     <span th:each="i : ${#numbers.sequence(1, review.rating)}" class="text-warning"><i class="bi bi-star-fill"></i></span>
-                                    <span th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" class="text-muted"><i class="bi bi-star"></i></span>
+                                    <th:block th:each="i : ${#numbers.sequence(1, 5)}"><span th:if="${i > review.rating}" class="text-muted"><i class="bi bi-star"></i></span></th:block>
                                 </div>
                                 <p class="mb-1" th:text="${review.content}">内容</p>
                                 <small>
-                                    <span class="badge" th:classappend="${review.status.name() == 'APPROVED'} ? 'bg-success' : 
-                                        ${review.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger'"
-                                        th:text="${review.status.name() == 'APPROVED'} ? '已通过' : 
-                                        ${review.status.name() == 'PENDING'} ? '待审核' : '已驳回'">状态</span>
+                                    <span class="badge"
+                                          th:classappend="${review.status.name() == 'APPROVED'} ? 'bg-success' : (${review.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                          th:text="${review.status.name() == 'APPROVED'} ? '已通过' : (${review.status.name() == 'PENDING'} ? '待审核' : '已驳回')">状态</span>
                                     <span class="ms-2 text-muted"><i class="bi bi-hand-thumbs-up"></i> <span th:text="${review.likeCount}">0</span></span>
                                 </small>
                             </div>

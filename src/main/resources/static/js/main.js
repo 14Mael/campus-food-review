@@ -8,20 +8,19 @@ document.addEventListener('DOMContentLoaded', function() {
             bsAlert.close();
         });
     }, 5000);
-
-    // Star rating visual feedback
-    document.querySelectorAll('.rating-stars .btn-check').forEach(function(radio) {
-        radio.addEventListener('change', function() {
-            var labels = this.closest('.btn-group').querySelectorAll('.btn');
-            labels.forEach(function(label) {
-                label.classList.remove('active');
-            });
-            if (this.checked) {
-                this.closest('.btn').classList.add('active');
-            }
-        });
-    });
 });
+
+// Star rating select
+function selectRating(radio) {
+    var group = radio.closest('.btn-group');
+    group.querySelectorAll('.btn').forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    if (radio.checked) {
+        var label = group.querySelector('label[for="' + radio.id + '"]');
+        if (label) label.classList.add('active');
+    }
+}
 
 // Toggle Like via AJAX
 function toggleLike(button, reviewId) {

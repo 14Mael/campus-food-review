@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class MainController {
@@ -90,17 +92,18 @@ public class MainController {
         model.addAttribute("favoriteCount", favoriteService.countByShop(id));
 
         User user = securityUtil.getCurrentUser(auth);
+        Set<Long> likedReviewIds = new HashSet<>();
         if (user != null) {
             model.addAttribute("isFavorited", favoriteService.isFavorited(id, user.getId()));
             model.addAttribute("currentUser", user);
-        }
-
-        // Check if each review is liked by current user
-        if (user != null) {
+            // Collect all review IDs liked by current user
             for (Review r : reviewPage.getContent()) {
-                r.setLikeCount(r.getLikeCount()); // no-op, just reference
+                if (reviewService.hasUserLiked(r.getId(), user.getId())) {
+                    likedReviewIds.add(r.getId());
+                }
             }
         }
+        model.addAttribute("likedReviewIds", likedReviewIds);
 
         return "shop-detail";
     }

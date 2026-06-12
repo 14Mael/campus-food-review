@@ -35,11 +35,19 @@
                             <div class="mb-3">
                                 <label class="form-label"><i class="bi bi-star-fill text-warning"></i> 评分</label>
                                 <div class="rating-stars">
-                                    <div class="btn-group" role="group">
-                                        <label class="btn btn-outline-warning" th:each="r : ${ratings}">
-                                            <input type="radio" name="rating" th:value="${r}" class="btn-check" th:checked="${r == 5}">
-                                            <span th:text="${r} + ' 星'">5 星</span>
-                                        </label>
+                                    <div class="btn-group" role="group" id="ratingGroup">
+                                        <th:block th:each="r : ${ratings}">
+                                            <input type="radio" class="btn-check" name="rating"
+                                                   th:id="'star' + ${r}" th:value="${r}"
+                                                   th:checked="${r == 5}"
+                                                   autocomplete="off"
+                                                   onchange="selectRating(this)">
+                                            <label class="btn btn-outline-warning"
+                                                   th:classappend="${r == 5} ? 'active' : ''"
+                                                   th:for="'star' + ${r}">
+                                                <span th:text="${r} + ' 星'"></span>
+                                            </label>
+                                        </th:block>
                                     </div>
                                 </div>
                             </div>

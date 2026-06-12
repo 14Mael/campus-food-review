@@ -1,22 +1,30 @@
 package com.campus.food.service;
 
 import com.campus.food.entity.Shop;
+import com.campus.food.repository.FavoriteRepository;
+import com.campus.food.repository.ReviewRepository;
 import com.campus.food.repository.ShopRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShopService {
 
     @Autowired
     private ShopRepository shopRepository;
+
+    @Autowired
+    private FavoriteRepository favoriteRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     public Page<Shop> findAll(int page, int size, String sortBy) {
         Sort sort;
@@ -52,6 +60,8 @@ public class ShopService {
 
     @Transactional
     public void deleteById(Long id) {
+        // 手动删除关联数据（外键约束）
+        favoriteRepository.deleteByShopId(id);
         shopRepository.deleteById(id);
     }
 
@@ -68,6 +78,6 @@ public class ShopService {
                 .map(Shop::getCategory)
                 .distinct()
                 .sorted()
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 }

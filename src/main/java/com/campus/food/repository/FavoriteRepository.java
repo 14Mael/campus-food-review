@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -18,4 +19,7 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     long countByShopId(Long shopId);
 
     Page<Favorite> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+
+    @Transactional
+    void deleteByShopId(Long shopId);
 }

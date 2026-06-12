@@ -60,10 +60,10 @@
                                         </div>
                                         <div class="my-1">
                                             <span th:each="i : ${#numbers.sequence(1, review.rating)}" class="text-warning"><i class="bi bi-star-fill"></i></span>
-                                            <span th:each="i : ${#numbers.sequence(1, 5 - review.rating)}" class="text-muted"><i class="bi bi-star"></i></span>
-                                            <span class="ms-2 badge" th:classappend="${review.status.name() == 'APPROVED'} ? 'bg-success' : 
-                                                ${review.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger'"
-                                                th:text="${review.status}">状态</span>
+                                            <th:block th:each="i : ${#numbers.sequence(1, 5)}"><span th:if="${i > review.rating}" class="text-muted"><i class="bi bi-star"></i></span></th:block>
+                                            <span class="ms-2 badge"
+                                                  th:classappend="${review.status.name() == 'APPROVED'} ? 'bg-success' : (${review.status.name() == 'PENDING'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                                  th:text="${review.status}">状态</span>
                                         </div>
                                         <p th:text="${review.content}">内容</p>
                                         <img th:if="${review.image != null}" th:src="${review.image}" class="img-fluid rounded" style="max-height:150px;">
